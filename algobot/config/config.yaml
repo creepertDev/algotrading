@@ -1,0 +1,39 @@
+alpaca:
+  api_key: "${ALPACA_API_KEY}"
+  secret_key: "${ALPACA_SECRET_KEY}"
+  paper: true
+  data_ws_url: "wss://stream.data.alpaca.markets/v2/iex"
+
+execution_service:
+  ws_url: "ws://execution-service:8765"
+  auth_token: "${WS_AUTH_TOKEN}"
+  reconnect_delay: 5
+
+portfolio:
+  max_position_usd: 10000
+  max_total_exposure_usd: 50000
+  max_drawdown_pct: 5.0
+
+strategies:
+  - name: "ma_crossover_SPY"
+    class: "MACrossover"
+    symbols: ["SPY"]
+    params:
+      fast_period: 9
+      slow_period: 21
+      bar_timeframe: "1Min"
+
+  - name: "rsi_mean_reversion_AAPL"
+    class: "RSIMeanReversion"
+    symbols: ["AAPL"]
+    params:
+      rsi_period: 14
+      oversold: 25          # tighter: only buy at more extreme oversold
+      overbought: 70
+      trend_ma_period: 50   # only buy when price is above 50-bar MA
+      stop_loss_pct: 2.0    # exit if down 2% from entry
+      bar_timeframe: "5Min"
+
+logging:
+  level: "INFO"
+  file: "logs/algobot.log"

@@ -1,0 +1,54 @@
+services:
+
+  execution-service:
+    build:
+      context: ./execution-service
+    container_name: execution-service
+    restart: unless-stopped
+    env_file:
+      - ./execution-service/.env
+    ports:
+      - "8765:8765"    # expose only if you need external access; remove otherwise
+    networks:
+      - trading
+
+  algobot:
+    build:
+      context: ./algobot
+    container_name: algobot
+    restart: unless-stopped
+    env_file:
+      - ./algobot/.env
+    depends_on:
+      - execution-service
+    networks:
+      - trading
+    volumes:
+      - logs:/app/logs
+
+  dashboard:
+    build:
+      context: ./dashboard
+    container_name: dashboard
+    restart: unless-stopped
+    env_file:
+      - ./algobot/.env
+    environment:
+      - LOG_FILE=/logs/algobot.log
+      - EXEC_WS_URL=ws://execution-service:8765
+    depends_on:
+      - execution-service
+      - algobot
+    networks:
+      - trading
+    volumes:
+      - logs:/logs:ro
+    ports:
+      - "127.0.0.1:8889:8080"
+
+volumes:
+  logs:
+
+networks:
+  trading:
+    driver: bridge

@@ -1,0 +1,38 @@
+alpaca:
+  api_key: "YOUR_ALPACA_API_KEY"
+  secret_key: "YOUR_ALPACA_SECRET_KEY"
+  paper: true                          # false for live trading
+  data_ws_url: "wss://stream.data.alpaca.markets/v2/iex"
+  # upgrade to: "wss://stream.data.alpaca.markets/v2/sip" for full SIP feed
+
+execution_service:
+  ws_url: "ws://localhost:8765"
+  auth_token: "choose-a-strong-secret-token"
+  reconnect_delay: 5                   # seconds between reconnect attempts
+
+portfolio:
+  max_position_usd: 10000              # per-symbol cap
+  max_total_exposure_usd: 50000        # aggregate cap across all positions
+  max_drawdown_pct: 5.0                # halt trading if daily drawdown exceeds X%
+
+strategies:
+  - name: "ma_crossover_SPY"
+    class: "MACrossover"
+    symbols: ["SPY"]
+    params:
+      fast_period: 9
+      slow_period: 21
+      bar_timeframe: "1Min"
+
+  - name: "rsi_mean_reversion_AAPL"
+    class: "RSIMeanReversion"
+    symbols: ["AAPL"]
+    params:
+      rsi_period: 14
+      oversold: 30
+      overbought: 70
+      bar_timeframe: "5Min"
+
+logging:
+  level: "INFO"
+  file: "logs/algobot.log"
