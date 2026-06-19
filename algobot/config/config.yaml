@@ -19,8 +19,11 @@ strategies:
     class: "MACrossover"
     symbols: ["SPY"]
     params:
-      fast_period: 9
+      fast_period: 12
       slow_period: 21
+      trend_ma_period: 50
+      min_hold_minutes: 60
+      max_trades_per_session: 2
       bar_timeframe: "5Min"
 
   - name: "rsi_mean_reversion_AAPL"
