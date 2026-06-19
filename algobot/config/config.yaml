@@ -21,7 +21,7 @@ strategies:
     params:
       fast_period: 9
       slow_period: 21
-      bar_timeframe: "1Min"
+      bar_timeframe: "5Min"
 
   - name: "rsi_mean_reversion_AAPL"
     class: "RSIMeanReversion"
