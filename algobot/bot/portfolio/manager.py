@@ -83,6 +83,15 @@ class PortfolioManager:
                         self.state.daily_drawdown_pct, self._max_dd_pct)
             return False, "daily drawdown limit breached"
 
+        if side == "sell":
+            pos = self.state.positions.get(symbol)
+            held = pos.qty if pos else 0.0
+            sell_qty = qty or 0.0
+            if held <= 0:
+                return False, f"no long position in {symbol} — sell would open a short"
+            if sell_qty > held:
+                return False, (f"cannot sell {sell_qty} {symbol} — only holding {held}")
+
         if side == "buy" and qty and price:
             order_usd = qty * price
             pos       = self.state.positions.get(symbol)
