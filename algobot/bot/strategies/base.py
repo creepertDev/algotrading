@@ -139,6 +139,16 @@ class Strategy(ABC):
                 time_in_force=time_in_force,
             )
             log.info("[%s] Order submitted: %s", self.name, resp)
+            # Optimistically record the fill so the portfolio manager
+            # tracks position and doesn't block the matching close order.
+            if qty and resp and isinstance(resp, dict):
+                price_est = float(
+                    resp.get("filled_avg_price") or
+                    resp.get("limit_price") or
+                    limit_price or 0
+                )
+                if price_est:
+                    self.portfolio.record_fill(symbol, side, qty, price_est)
             return resp
         except Exception as exc:
             log.error("[%s] Order submission failed: %s", self.name, exc)
