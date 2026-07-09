@@ -27,8 +27,9 @@ log = logging.getLogger(__name__)
 
 # Registry: config "class" key → fully-qualified module path
 STRATEGY_REGISTRY: dict[str, str] = {
-    "MACrossover":       "bot.strategies.ma_crossover.MACrossover",
-    "RSIMeanReversion":  "bot.strategies.rsi_mean_reversion.RSIMeanReversion",
+    "MACrossover":        "bot.strategies.ma_crossover.MACrossover",
+    "RSIMeanReversion":   "bot.strategies.rsi_mean_reversion.RSIMeanReversion",
+    "BollingerReversion": "bot.strategies.bollinger_reversion.BollingerReversion",
 }
 
 

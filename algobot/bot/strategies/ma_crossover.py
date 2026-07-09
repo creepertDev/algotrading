@@ -10,7 +10,8 @@ Rules:
 from __future__ import annotations
 import logging
 from collections import deque
-from datetime import datetime, time, timezone, timedelta
+from datetime import datetime, time, timezone
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -19,7 +20,7 @@ from ..data.models import Bar
 
 log = logging.getLogger(__name__)
 
-ET_OFFSET  = timedelta(hours=-4)   # EDT; switch to -5 in winter
+EASTERN = ZoneInfo("America/New_York")
 SESSION_OPEN = time(9, 30)
 NO_ENTRY_UNTIL = time(9, 45)       # rule 4: skip first 15 min
 
@@ -42,11 +43,10 @@ class MACrossover(Strategy):
         self._session_date[symbol]  = None
 
     def _et_time(self, bar: Bar) -> datetime:
-        if bar.timestamp.tzinfo is None:
-            ts = bar.timestamp.replace(tzinfo=timezone.utc)
-        else:
-            ts = bar.timestamp
-        return ts + ET_OFFSET
+        ts = bar.timestamp
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        return ts.astimezone(EASTERN)
 
     def _reset_session_if_new(self, symbol: str, et_now: datetime) -> None:
         today = et_now.date()

@@ -20,8 +20,9 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger(__name__)
 
 STRATEGY_REGISTRY = {
-    "MACrossover":      ("bot.strategies.ma_crossover",      "MACrossover"),
-    "RSIMeanReversion": ("bot.strategies.rsi_mean_reversion", "RSIMeanReversion"),
+    "MACrossover":        ("bot.strategies.ma_crossover",       "MACrossover"),
+    "RSIMeanReversion":   ("bot.strategies.rsi_mean_reversion",  "RSIMeanReversion"),
+    "BollingerReversion": ("bot.strategies.bollinger_reversion", "BollingerReversion"),
 }
 
 DEFAULT_PARAMS = {
@@ -31,6 +32,10 @@ DEFAULT_PARAMS = {
     "RSIMeanReversion": {
         "rsi_period": 14, "oversold": 25, "overbought": 70,
         "trend_ma_period": 50, "stop_loss_pct": 2.0, "qty": 1,
+    },
+    "BollingerReversion": {
+        "bb_period": 20, "bb_ndev": 2.0, "stop_loss_pct": 0.4,
+        "max_trades_per_session": 3, "qty": 1,
     },
 }
 
