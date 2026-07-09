@@ -23,6 +23,7 @@ STRATEGY_REGISTRY = {
     "MACrossover":        ("bot.strategies.ma_crossover",       "MACrossover"),
     "RSIMeanReversion":   ("bot.strategies.rsi_mean_reversion",  "RSIMeanReversion"),
     "BollingerReversion": ("bot.strategies.bollinger_reversion", "BollingerReversion"),
+    "VolumeExhaustion":   ("bot.strategies.volume_exhaustion",   "VolumeExhaustion"),
 }
 
 DEFAULT_PARAMS = {
@@ -36,6 +37,11 @@ DEFAULT_PARAMS = {
     "BollingerReversion": {
         "bb_period": 20, "bb_ndev": 2.0, "stop_loss_pct": 0.4,
         "max_trades_per_session": 3, "qty": 1,
+    },
+    "VolumeExhaustion": {
+        "rvol_threshold": 2.5, "drop_threshold": -0.3, "vol_lookback": 40,
+        "hold_minutes": 30, "stop_loss_pct": 0.6,
+        "max_trades_per_session": 2, "qty": 1,
     },
 }
 

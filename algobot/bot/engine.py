@@ -31,6 +31,7 @@ STRATEGY_REGISTRY: dict[str, str] = {
     "RSIMeanReversion":   "bot.strategies.rsi_mean_reversion.RSIMeanReversion",
     "BollingerReversion": "bot.strategies.bollinger_reversion.BollingerReversion",
     "NewsSentiment":      "bot.strategies.news_sentiment.NewsSentiment",
+    "VolumeExhaustion":   "bot.strategies.volume_exhaustion.VolumeExhaustion",
 }
 
 
