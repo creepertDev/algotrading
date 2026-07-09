@@ -96,7 +96,7 @@ class RSIMeanReversion(Strategy):
             if drop_pct >= stop_pct:
                 log.info("[%s] Stop-loss hit on %s — down %.2f%% from entry $%.2f",
                          self.name, sym, drop_pct, entry)
-                resp = await self.sell(sym, qty=qty)
+                resp = await self.sell(sym, qty=qty, price_hint=bar.close)
                 if resp and not resp.get("error_message"):
                     self._in_position[sym] = False
                     self._entry_price[sym] = 0.0
@@ -107,7 +107,7 @@ class RSIMeanReversion(Strategy):
         if signal == "buy" and not self._in_position[sym]:
             log.info("[%s] RSI=%.1f oversold + uptrend confirmed — buying %s @ $%.2f",
                      self.name, rsi, sym, bar.close)
-            resp = await self.buy(sym, qty=qty)
+            resp = await self.buy(sym, qty=qty, price_hint=bar.close)
             if resp and not resp.get("error_message"):
                 self._in_position[sym] = True
                 self._entry_price[sym] = bar.close
@@ -115,7 +115,7 @@ class RSIMeanReversion(Strategy):
         elif signal == "sell" and self._in_position[sym]:
             log.info("[%s] RSI=%.1f overbought — selling %s @ $%.2f",
                      self.name, rsi, sym, bar.close)
-            resp = await self.sell(sym, qty=qty)
+            resp = await self.sell(sym, qty=qty, price_hint=bar.close)
             if resp and not resp.get("error_message"):
                 self._in_position[sym] = False
                 self._entry_price[sym] = 0.0

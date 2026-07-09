@@ -87,13 +87,9 @@ class PortfolioManager:
             pos = self.state.positions.get(symbol)
             held = pos.qty if pos else 0.0
             sell_qty = qty or 0.0
-            # Only block if we have explicit fill records showing no position.
-            # If we have no records at all (held==0 and never bought), allow
-            # the strategy's own position tracking to govern — it records buys
-            # optimistically via record_fill after submission.
-            if held < 0:
+            if held <= 0:
                 return False, f"no long position in {symbol} — sell would open a short"
-            if held > 0 and sell_qty > held:
+            if sell_qty > held:
                 return False, (f"cannot sell {sell_qty} {symbol} — only holding {held}")
 
         if side == "buy" and qty and price:

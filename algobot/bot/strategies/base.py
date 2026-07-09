@@ -94,9 +94,11 @@ class Strategy(ABC):
         order_type: str = "market",
         limit_price: Optional[float] = None,
         time_in_force: str = "day",
+        price_hint: Optional[float] = None,
     ) -> Optional[dict]:
         return await self._place_order(
-            symbol, "buy", qty, notional, order_type, limit_price, time_in_force
+            symbol, "buy", qty, notional, order_type, limit_price,
+            time_in_force, price_hint,
         )
 
     async def sell(
@@ -107,9 +109,11 @@ class Strategy(ABC):
         order_type: str = "market",
         limit_price: Optional[float] = None,
         time_in_force: str = "day",
+        price_hint: Optional[float] = None,
     ) -> Optional[dict]:
         return await self._place_order(
-            symbol, "sell", qty, notional, order_type, limit_price, time_in_force
+            symbol, "sell", qty, notional, order_type, limit_price,
+            time_in_force, price_hint,
         )
 
     async def _place_order(
@@ -121,12 +125,14 @@ class Strategy(ABC):
         order_type: str,
         limit_price: Optional[float],
         time_in_force: str,
+        price_hint: Optional[float] = None,
     ) -> Optional[dict]:
         if not self._running or self._warming_up:
             return None
 
-        # Risk gate
-        price_est = limit_price or 0.0   # 0 means portfolio can't check USD cap
+        # Risk gate — price_hint (usually the bar close) lets market orders
+        # be checked against USD caps and position tracking.
+        price_est = limit_price or price_hint or 0.0
         allowed, reason = self.portfolio.check_order(symbol, side, qty, price_est or None)
         if not allowed:
             log.warning("[%s] Order blocked: %s", self.name, reason)
@@ -142,13 +148,13 @@ class Strategy(ABC):
             # Optimistically record the fill so the portfolio manager
             # tracks position and doesn't block the matching close order.
             if qty and resp and isinstance(resp, dict):
-                price_est = float(
+                fill_price = float(
                     resp.get("filled_avg_price") or
                     resp.get("limit_price") or
-                    limit_price or 0
+                    limit_price or price_hint or 0
                 )
-                if price_est:
-                    self.portfolio.record_fill(symbol, side, qty, price_est)
+                if fill_price:
+                    self.portfolio.record_fill(symbol, side, qty, fill_price)
             return resp
         except Exception as exc:
             log.error("[%s] Order submission failed: %s", self.name, exc)

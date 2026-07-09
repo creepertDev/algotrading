@@ -106,21 +106,30 @@ class MACrossover(Strategy):
 
             qty = self.params.get("qty", 1)
             log.info("[%s] Bullish crossover on %s @ %.2f", self.name, sym, bar.close)
-            await self.buy(sym, qty=qty)
-            self._entry_time[sym] = et_now
-            self._session_trades[sym] += 1
+            resp = await self.buy(sym, qty=qty, price_hint=bar.close)
+            if resp and not resp.get("error_message"):
+                self._entry_time[sym] = et_now
+                self._session_trades[sym] += 1
 
         elif signal == -1 and prev == 1:
-            # ── Rule 2: minimum hold time ─────────────────────────────────
             entry = self._entry_time[sym]
-            if entry is not None:
-                held = (et_now - entry).total_seconds() / 60
-                if held < min_hold:
-                    log.info("[%s] Skipping sell — only held %.0f min (min %d)",
-                             self.name, held, min_hold)
-                    return
+
+            # Only sell if we actually hold a position — a bullish cross whose
+            # buy was filtered out must not produce a sell (opens a short).
+            if entry is None:
+                return
+
+            # ── Rule 2: minimum hold time ─────────────────────────────────
+            held = (et_now - entry).total_seconds() / 60
+            if held < min_hold:
+                log.info("[%s] Skipping sell — only held %.0f min (min %d)",
+                         self.name, held, min_hold)
+                # Stay in "bullish" state so the next bearish bar retries the exit
+                self._prev_signal[sym] = 1
+                return
 
             qty = self.params.get("qty", 1)
             log.info("[%s] Bearish crossover on %s @ %.2f", self.name, sym, bar.close)
-            await self.sell(sym, qty=qty)
-            self._entry_time[sym] = None
+            resp = await self.sell(sym, qty=qty, price_hint=bar.close)
+            if resp and not resp.get("error_message"):
+                self._entry_time[sym] = None
