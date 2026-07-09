@@ -36,7 +36,7 @@
           d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
       </svg>
       <span class="text-lg font-semibold tracking-tight">AlgoBot</span>
-      <span class="text-gray-600 text-sm">/ dashboard</span>
+      <span class="text-gray-600 text-sm">/ 5 strategies</span>
     </div>
     <div class="flex items-center gap-4 text-sm">
       <div class="flex items-center gap-2">
@@ -47,105 +47,75 @@
     </div>
   </div>
 
-  <div class="p-6 grid grid-cols-12 gap-4">
+  <div class="p-6 flex flex-col gap-4">
 
-    <!-- Account + Positions -->
-    <div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
-
-      <!-- Account card -->
-      <div class="card rounded-xl p-5">
-        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Account</div>
-        <div class="text-3xl font-bold text-white" id="equity">—</div>
-        <div class="text-xs text-gray-500 mt-1">equity</div>
-        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <div class="text-gray-500 text-xs">Buying Power</div>
-            <div class="text-gray-200 font-medium" id="buying-power">—</div>
-          </div>
-          <div>
-            <div class="text-gray-500 text-xs">Day P&amp;L</div>
-            <div class="font-medium" id="day-pnl">—</div>
-          </div>
-          <div>
-            <div class="text-gray-500 text-xs">Status</div>
-            <div class="text-gray-200 font-medium" id="acct-status">—</div>
-          </div>
-          <div>
-            <div class="text-gray-500 text-xs">Mode</div>
-            <div class="text-yellow-400 font-medium" id="acct-mode">—</div>
-          </div>
-        </div>
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="card rounded-xl p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">Equity</div>
+        <div class="text-2xl font-bold mt-1" id="equity">—</div>
       </div>
+      <div class="card rounded-xl p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">Day P&amp;L</div>
+        <div class="text-2xl font-bold mt-1" id="day-pnl">—</div>
+      </div>
+      <div class="card rounded-xl p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">Buying Power</div>
+        <div class="text-2xl font-bold mt-1" id="buying-power">—</div>
+      </div>
+      <div class="card rounded-xl p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">Open Positions</div>
+        <div class="text-2xl font-bold mt-1" id="pos-count">—</div>
+      </div>
+      <div class="card rounded-xl p-4">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">Mode</div>
+        <div class="text-2xl font-bold mt-1 text-yellow-400" id="acct-mode">—</div>
+      </div>
+    </div>
 
-      <!-- Positions card -->
-      <div class="card rounded-xl p-5 flex-1">
+    <!-- Strategy cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4" id="strategy-cards"></div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="charts-grid"></div>
+
+    <!-- Positions + Log -->
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 lg:col-span-4 card rounded-xl p-5">
         <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Open Positions</div>
-        <div id="positions-body">
-          <div class="text-gray-600 text-sm">Loading…</div>
-        </div>
+        <div id="positions-body"><div class="text-gray-600 text-sm">Loading…</div></div>
       </div>
-
-      <!-- Strategy status -->
-      <div class="card rounded-xl p-5">
-        <div class="text-xs text-gray-500 uppercase tracking-widest mb-3">Strategies</div>
-        <div id="strategies-body" class="flex flex-col gap-2 text-sm">
-          <div class="text-gray-600">Reading logs…</div>
+      <div class="col-span-12 lg:col-span-8 card rounded-xl flex flex-col" style="height: 420px">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+          <div class="text-xs text-gray-500 uppercase tracking-widest">Live Log</div>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+              <input type="checkbox" id="autoscroll" checked class="accent-blue-500" /> Auto-scroll
+            </label>
+            <select id="log-filter" class="text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded px-2 py-1">
+              <option value="ALL">All</option>
+              <option value="ORDER">Orders only</option>
+              <option value="ERROR">Errors only</option>
+            </select>
+            <button onclick="clearLogs()" class="text-xs text-gray-500 hover:text-gray-300 transition">Clear</button>
+          </div>
         </div>
-      </div>
-
-    </div>
-
-    <!-- Live log -->
-    <div class="col-span-12 lg:col-span-8 card rounded-xl flex flex-col" style="height: calc(100vh - 130px)">
-      <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-        <div class="text-xs text-gray-500 uppercase tracking-widest">Live Log</div>
-        <div class="flex items-center gap-3">
-          <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-            <input type="checkbox" id="autoscroll" checked class="accent-blue-500" />
-            Auto-scroll
-          </label>
-          <select id="log-filter" class="text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded px-2 py-1">
-            <option value="ALL">All</option>
-            <option value="ORDER">Orders only</option>
-            <option value="ERROR">Errors only</option>
-          </select>
-          <button onclick="clearLogs()" class="text-xs text-gray-500 hover:text-gray-300 transition">Clear</button>
-        </div>
-      </div>
-      <div id="log-container" class="flex-1 overflow-y-auto px-5 py-3 flex flex-col gap-0.5"></div>
-    </div>
-
-    <!-- Charts row -->
-    <div class="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="card rounded-xl p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="text-xs text-gray-500 uppercase tracking-widest">SPY — MA Crossover</div>
-          <select id="spy-tf" onchange="loadChart('SPY','spy-chart',this.value)"
-            class="text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded px-2 py-1">
-            <option value="1m">1 Min</option>
-            <option value="5m" selected>5 Min</option>
-            <option value="15m">15 Min</option>
-          </select>
-        </div>
-        <div style="position:relative;height:260px"><canvas id="spy-chart"></canvas></div>
-      </div>
-      <div class="card rounded-xl p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="text-xs text-gray-500 uppercase tracking-widest">AAPL — RSI Mean Reversion</div>
-          <select id="aapl-tf" onchange="loadChart('AAPL','aapl-chart',this.value)"
-            class="text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded px-2 py-1">
-            <option value="1m">1 Min</option>
-            <option value="5m" selected>5 Min</option>
-            <option value="15m">15 Min</option>
-          </select>
-        </div>
-        <div style="position:relative;height:260px"><canvas id="aapl-chart"></canvas></div>
+        <div id="log-container" class="flex-1 overflow-y-auto px-5 py-3 flex flex-col gap-0.5"></div>
       </div>
     </div>
 
   </div>
 
 <script>
+  // ── Strategy metadata (mirrors config.yaml) ───────────────────────────────
+  const STRATEGIES = [
+    { name: 'ma_crossover_SPY',       symbol: 'SPY',  type: 'Trend — EMA 12/21',       overlay: 'ema'  },
+    { name: 'rsi_mean_reversion_AAPL',symbol: 'AAPL', type: 'RSI Mean Reversion',      overlay: null   },
+    { name: 'bollinger_reversion_QQQ',symbol: 'QQQ',  type: 'Bollinger Reversion',     overlay: 'bb'   },
+    { name: 'news_sentiment_TSLA',    symbol: 'TSLA', type: 'News Sentiment (VADER)',  overlay: null   },
+    { name: 'volume_exhaustion_NVDA', symbol: 'NVDA', type: 'Volume Exhaustion',       overlay: 'vol'  },
+  ];
+
   // ── Clock ────────────────────────────────────────────────────────────────
   function updateClock() {
     document.getElementById('clock').textContent =
@@ -154,17 +124,50 @@
   setInterval(updateClock, 1000);
   updateClock();
 
+  // ── Strategy cards ───────────────────────────────────────────────────────
+  const strategyState = {};
+  STRATEGIES.forEach(s => strategyState[s.name] = { ...s, lastSignal: 'waiting for signals…', lastTime: '—' });
+
+  function renderStrategies() {
+    document.getElementById('strategy-cards').innerHTML = STRATEGIES.map(meta => {
+      const s = strategyState[meta.name];
+      return `
+      <div class="card rounded-xl p-4">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-blue-400 font-semibold">${meta.symbol}</span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="text-xs text-gray-500 mb-2">${meta.type}</div>
+        <div class="text-gray-300 text-xs truncate" title="${s.lastSignal}">${s.lastSignal}</div>
+        <div class="text-gray-600 text-xs mt-1">${s.lastTime}</div>
+      </div>`;
+    }).join('');
+  }
+  renderStrategies();
+
+  function parseStrategiesFromLog(line) {
+    const m = line.match(/bot\.strategies\.\w+:\s+\[([^\]]+)\]\s+(.*)/);
+    if (!m) return;
+    const [, name, msg] = m;
+    if (!strategyState[name]) return;
+    if (/buy|sell|crossover|oversold|overbought|band|capitulation|news|headline|stop/i.test(msg)) {
+      strategyState[name].lastSignal = msg.length > 70 ? msg.slice(0, 70) + '…' : msg;
+      strategyState[name].lastTime   = new Date().toLocaleTimeString('en-US', { hour12: false });
+      renderStrategies();
+    }
+  }
+
   // ── Log stream ───────────────────────────────────────────────────────────
   const logContainer = document.getElementById('log-container');
   const MAX_LINES = 2000;
   let allLines = [];
 
   function classifyLine(text) {
-    if (/buying|buy/i.test(text))      return 'log-buy';
-    if (/selling|sell/i.test(text))    return 'log-sell';
-    if (/crossover/i.test(text))       return 'log-cross';
-    if (/ERROR/.test(text))            return 'log-ERROR';
-    if (/WARNING/.test(text))          return 'log-WARNING';
+    if (/buying|bought|bullish|buy/i.test(text))  return 'log-buy';
+    if (/selling|sold|bearish|sell/i.test(text))  return 'log-sell';
+    if (/crossover|band|capitulation/i.test(text)) return 'log-cross';
+    if (/ERROR/.test(text))   return 'log-ERROR';
+    if (/WARNING/.test(text)) return 'log-WARNING';
     return 'log-INFO';
   }
 
@@ -184,33 +187,29 @@
       el.textContent = text;
       logContainer.appendChild(el);
     });
-    if (document.getElementById('autoscroll').checked) {
+    if (document.getElementById('autoscroll').checked)
       logContainer.scrollTop = logContainer.scrollHeight;
-    }
   }
 
   function appendLine(text) {
     allLines.push(text);
     if (allLines.length > MAX_LINES) allLines.shift();
+    parseStrategiesFromLog(text);
     const filter = document.getElementById('log-filter').value;
     if (!matchesFilter(text, filter)) return;
     const el = document.createElement('div');
     el.className = 'log-line ' + classifyLine(text);
     el.textContent = text;
     logContainer.appendChild(el);
-    while (logContainer.children.length > MAX_LINES) {
+    while (logContainer.children.length > MAX_LINES)
       logContainer.removeChild(logContainer.firstChild);
-    }
-    if (document.getElementById('autoscroll').checked) {
+    if (document.getElementById('autoscroll').checked)
       logContainer.scrollTop = logContainer.scrollHeight;
-    }
-    parseStrategiesFromLog(text);
   }
 
   function clearLogs() { allLines = []; logContainer.innerHTML = ''; }
   document.getElementById('log-filter').addEventListener('change', renderLines);
 
-  // WebSocket log connection
   const proto  = location.protocol === 'https:' ? 'wss' : 'ws';
   const wsUrl  = `${proto}://${location.host}/ws/logs`;
   const wsDot  = document.getElementById('ws-dot');
@@ -218,55 +217,15 @@
 
   function connectLogWs() {
     const ws = new WebSocket(wsUrl);
-    ws.onopen = () => {
-      wsDot.className  = 'dot dot-green';
-      wsStat.textContent = 'live';
-    };
-    ws.onmessage = e => appendLine(e.data);
-    ws.onclose = () => {
-      wsDot.className  = 'dot dot-yellow';
-      wsStat.textContent = 'reconnecting…';
-      setTimeout(connectLogWs, 3000);
-    };
-    ws.onerror = () => {
-      wsDot.className  = 'dot dot-red';
-      wsStat.textContent = 'error';
-    };
+    ws.onopen    = () => { wsDot.className = 'dot dot-green';  wsStat.textContent = 'live'; };
+    ws.onmessage = e  => appendLine(e.data);
+    ws.onclose   = () => { wsDot.className = 'dot dot-yellow'; wsStat.textContent = 'reconnecting…';
+                           setTimeout(connectLogWs, 3000); };
+    ws.onerror   = () => { wsDot.className = 'dot dot-red';    wsStat.textContent = 'error'; };
   }
   connectLogWs();
 
-  // ── Strategy status parsed from logs ─────────────────────────────────────
-  const strategyState = {};
-
-  function parseStrategiesFromLog(line) {
-    // Match lines like: "... [INFO] bot.strategies.xxx: [ma_crossover_SPY] ..."
-    const m = line.match(/bot\.strategies\.\w+:\s+\[([^\]]+)\]\s+(.*)/);
-    if (!m) return;
-    const [, name, msg] = m;
-    if (!strategyState[name]) strategyState[name] = { name, lastSignal: '—', lastTime: '—' };
-    if (/buy|sell|crossover|oversold|overbought/i.test(msg)) {
-      strategyState[name].lastSignal = msg.length > 60 ? msg.slice(0, 60) + '…' : msg;
-      strategyState[name].lastTime   = new Date().toLocaleTimeString('en-US', { hour12: false });
-    }
-    renderStrategies();
-  }
-
-  function renderStrategies() {
-    const el = document.getElementById('strategies-body');
-    const entries = Object.values(strategyState);
-    if (!entries.length) return;
-    el.innerHTML = entries.map(s => `
-      <div class="flex flex-col gap-0.5 py-2 border-b border-gray-800 last:border-0">
-        <div class="flex items-center justify-between">
-          <span class="text-blue-400 font-medium">${s.name}</span>
-          <span class="dot dot-green"></span>
-        </div>
-        <div class="text-gray-400 text-xs truncate">${s.lastSignal}</div>
-        <div class="text-gray-600 text-xs">${s.lastTime}</div>
-      </div>`).join('');
-  }
-
-  // ── Account + Positions polling ───────────────────────────────────────────
+  // ── Account + Positions ──────────────────────────────────────────────────
   function fmt(n) {
     if (n == null || n === '') return '—';
     const v = parseFloat(n);
@@ -277,31 +236,28 @@
     if (n == null || n === '') return '—';
     const v = parseFloat(n);
     if (isNaN(v)) return n;
-    const s = (v >= 0 ? '+' : '') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const s = (v >= 0 ? '+' : '-') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return `<span class="${v >= 0 ? 'text-green-400' : 'text-red-400'}">${s}</span>`;
   }
 
   async function pollAccount() {
     try {
-      const r = await fetch('/api/account');
-      const resp = await r.json();
+      const resp = await (await fetch('/api/account')).json();
       const d = resp.data ?? resp;
       document.getElementById('equity').textContent       = fmt(d.equity);
       document.getElementById('buying-power').textContent = fmt(d.buying_power ?? d.daytrading_buying_power);
-      const pnl = d.last_equity
-        ? (parseFloat(d.equity) - parseFloat(d.last_equity)).toFixed(2) : null;
+      const pnl = d.last_equity ? (parseFloat(d.equity) - parseFloat(d.last_equity)).toFixed(2) : null;
       document.getElementById('day-pnl').innerHTML        = fmtPnl(pnl);
-      document.getElementById('acct-status').textContent  = d.status ?? '—';
       document.getElementById('acct-mode').textContent    = d.account_number?.startsWith('PA') ? 'Paper' : 'Live';
     } catch {}
   }
 
   async function pollPositions() {
     try {
-      const r  = await fetch('/api/positions');
-      const resp = await r.json();
+      const resp = await (await fetch('/api/positions')).json();
       const raw  = resp.data ?? resp;
       const positions = Array.isArray(raw) ? raw : (raw.positions ?? []);
+      document.getElementById('pos-count').textContent = positions.length;
       const el = document.getElementById('positions-body');
       if (!positions.length) {
         el.innerHTML = '<div class="text-gray-600 text-sm">No open positions</div>';
@@ -311,10 +267,8 @@
         <table class="w-full text-xs">
           <thead>
             <tr class="text-gray-500 border-b border-gray-800">
-              <th class="text-left pb-2">Symbol</th>
-              <th class="text-right pb-2">Qty</th>
-              <th class="text-right pb-2">Avg</th>
-              <th class="text-right pb-2">P&amp;L</th>
+              <th class="text-left pb-2">Symbol</th><th class="text-right pb-2">Qty</th>
+              <th class="text-right pb-2">Avg</th><th class="text-right pb-2">P&amp;L</th>
             </tr>
           </thead>
           <tbody>
@@ -330,169 +284,137 @@
     } catch {}
   }
 
-  pollAccount();
-  pollPositions();
+  pollAccount(); pollPositions();
   setInterval(pollAccount,   15000);
   setInterval(pollPositions, 15000);
 
   // ── Charts ───────────────────────────────────────────────────────────────
   const chartInstances = {};
 
+  // Build a chart panel per strategy
+  document.getElementById('charts-grid').innerHTML = STRATEGIES.map(s => `
+    <div class="card rounded-xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs text-gray-500 uppercase tracking-widest">${s.symbol} — ${s.type}</div>
+        <select id="tf-${s.symbol}" onchange="loadChart('${s.symbol}','${s.overlay ?? ''}')"
+          class="text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded px-2 py-1">
+          <option value="1m">1 Min</option>
+          <option value="5m" selected>5 Min</option>
+          <option value="15m">15 Min</option>
+        </select>
+      </div>
+      <div style="position:relative;height:240px"><canvas id="chart-${s.symbol}"></canvas></div>
+    </div>`).join('');
+
   function chartOptions() {
     return {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
+      responsive: true, maintainAspectRatio: false, animation: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: true, labels: { color: '#94a3b8', boxWidth: 10, font: { size: 11 } } },
-        tooltip: {
-          backgroundColor: '#1f2937',
-          titleColor: '#94a3b8',
-          bodyColor: '#e2e8f0',
-          borderColor: '#374151',
-          borderWidth: 1,
-        },
+        tooltip: { backgroundColor: '#1f2937', titleColor: '#94a3b8', bodyColor: '#e2e8f0',
+                   borderColor: '#374151', borderWidth: 1 },
       },
       scales: {
-        x: {
-          type: 'time',
-          time: { tooltipFormat: 'MMM d HH:mm' },
-          ticks: { color: '#4b5563', maxTicksLimit: 8, font: { size: 10 } },
-          grid:  { color: '#1f2937' },
-        },
-        y: {
-          position: 'right',
-          ticks: { color: '#4b5563', font: { size: 10 },
-                   callback: v => '$' + v.toFixed(2) },
-          grid:  { color: '#1f2937' },
-        },
+        x: { type: 'time', time: { tooltipFormat: 'MMM d HH:mm' },
+             ticks: { color: '#4b5563', maxTicksLimit: 8, font: { size: 10 } },
+             grid: { color: '#1f2937' } },
+        y: { position: 'right',
+             ticks: { color: '#4b5563', font: { size: 10 }, callback: v => '$' + v.toFixed(2) },
+             grid: { color: '#1f2937' } },
       },
     };
   }
 
-  async function loadChart(symbol, canvasId, timeframe = '5m') {
+  function ema(data, period) {
+    const k = 2 / (period + 1), out = [];
+    let prev = null;
+    for (const v of data) {
+      if (prev === null) { out.push(v); prev = v; }
+      else { const e = v * k + prev * (1 - k); out.push(e); prev = e; }
+    }
+    return out;
+  }
+
+  function rollingBB(data, period, ndev) {
+    const mid = [], upper = [], lower = [];
+    for (let i = 0; i < data.length; i++) {
+      if (i < period - 1) { mid.push(null); upper.push(null); lower.push(null); continue; }
+      const win = data.slice(i - period + 1, i + 1);
+      const m = win.reduce((a,b) => a+b, 0) / period;
+      const sd = Math.sqrt(win.reduce((a,b) => a + (b-m)**2, 0) / (period - 1));
+      mid.push(m); upper.push(m + ndev*sd); lower.push(m - ndev*sd);
+    }
+    return { mid, upper, lower };
+  }
+
+  async function loadChart(symbol, overlay) {
+    const tf = document.getElementById(`tf-${symbol}`).value;
     try {
-      const r    = await fetch(`/api/chart/${symbol}?timeframe=${timeframe}&bars=200`);
-      const data = await r.json();
-      renderChart(canvasId, symbol, data.bars, data.signals);
-    } catch(e) {
-      console.warn('Chart load failed:', e);
-    }
+      const data = await (await fetch(`/api/chart/${symbol}?timeframe=${tf}&bars=200`)).json();
+      renderChart(symbol, overlay, data.bars, data.signals);
+    } catch(e) { console.warn('Chart load failed:', symbol, e); }
   }
 
-  function renderChart(canvasId, symbol, bars, signals) {
-    if (!bars.length) return;
+  function renderChart(symbol, overlay, bars, signals) {
+    if (!bars || !bars.length) return;
+    const labels = bars.map(b => new Date(b.t));
+    const closes = bars.map(b => b.c);
 
-    const labels    = bars.map(b => new Date(b.t));
-    const closes    = bars.map(b => b.c);
+    const datasets = [{
+      label: symbol, type: 'line',
+      data: labels.map((t, i) => ({ x: t, y: closes[i] })),
+      borderColor: '#38bdf8', borderWidth: 1.5, pointRadius: 0, tension: 0.1, fill: false, order: 3,
+    }];
 
-    // MA lines computed client-side
-    function ema(data, period) {
-      const k = 2 / (period + 1), out = [];
-      let prev = null;
-      for (const v of data) {
-        if (prev === null) { out.push(v); prev = v; }
-        else { const e = v * k + prev * (1 - k); out.push(e); prev = e; }
-      }
-      return out;
+    if (overlay === 'ema') {
+      const fast = ema(closes, 12), slow = ema(closes, 21);
+      datasets.push(
+        { label: 'EMA 12', type: 'line', data: labels.map((t,i) => ({ x: t, y: +fast[i].toFixed(3) })),
+          borderColor: '#a78bfa', borderWidth: 1.5, pointRadius: 0, borderDash: [4,4], fill: false, order: 4 },
+        { label: 'EMA 21', type: 'line', data: labels.map((t,i) => ({ x: t, y: +slow[i].toFixed(3) })),
+          borderColor: '#fb923c', borderWidth: 1.5, pointRadius: 0, borderDash: [4,4], fill: false, order: 4 });
+    } else if (overlay === 'bb') {
+      const bb = rollingBB(closes, 20, 2.0);
+      const mk = (arr, label, color) => ({
+        label, type: 'line',
+        data: labels.map((t,i) => arr[i] == null ? null : ({ x: t, y: +arr[i].toFixed(3) })).filter(Boolean),
+        borderColor: color, borderWidth: 1, pointRadius: 0, borderDash: [4,4], fill: false, order: 4 });
+      datasets.push(mk(bb.upper, 'BB upper', '#64748b'),
+                    mk(bb.mid,   'BB mid',   '#a78bfa'),
+                    mk(bb.lower, 'BB lower', '#64748b'));
     }
-    const fastMA = ema(closes, 9);
-    const slowMA = ema(closes, 21);
 
-    // Buy / sell scatter points snapped to nearest bar time
+    // Buy / sell markers snapped to the nearest bar
     const buys = [], sells = [];
-    for (const sig of signals) {
-      const sigTime = new Date(sig.t).getTime();
-      let closest = null, minDiff = Infinity;
+    for (const sig of (signals || [])) {
+      const st = new Date(sig.t).getTime();
+      let ci = null, md = Infinity;
       for (let i = 0; i < labels.length; i++) {
-        const diff = Math.abs(labels[i].getTime() - sigTime);
-        if (diff < minDiff) { minDiff = diff; closest = i; }
+        const d = Math.abs(labels[i].getTime() - st);
+        if (d < md) { md = d; ci = i; }
       }
-      if (closest !== null && minDiff < 10 * 60 * 1000) {
-        const pt = { x: labels[closest], y: closes[closest] };
-        if (sig.side === 'buy')  buys.push(pt);
-        else                     sells.push(pt);
+      if (ci !== null && md < 10 * 60 * 1000) {
+        const pt = { x: labels[ci], y: closes[ci] };
+        (sig.side === 'buy' ? buys : sells).push(pt);
       }
     }
+    datasets.push(
+      { label: 'Buy', data: buys, type: 'scatter', pointStyle: 'triangle',
+        pointRadius: 8, pointHoverRadius: 10, backgroundColor: '#22c55e', borderColor: '#22c55e', order: 1 },
+      { label: 'Sell', data: sells, type: 'scatter', pointStyle: 'triangle', pointRotation: 180,
+        pointRadius: 8, pointHoverRadius: 10, backgroundColor: '#f43f5e', borderColor: '#f43f5e', order: 2 });
 
-    const datasets = [
-      {
-        label: symbol,
-        data: labels.map((t, i) => ({ x: t, y: closes[i] })),
-        borderColor: '#38bdf8',
-        borderWidth: 1.5,
-        pointRadius: 0,
-        tension: 0.1,
-        fill: false,
-        order: 3,
-      },
-      {
-        label: 'EMA 9',
-        type: 'line',
-        data: labels.map((t, i) => ({ x: t, y: +fastMA[i].toFixed(3) })),
-        borderColor: '#a78bfa',
-        borderWidth: 1.5,
-        pointRadius: 0,
-        borderDash: [4, 4],
-        fill: false,
-        order: 4,
-      },
-      {
-        label: 'EMA 21',
-        type: 'line',
-        data: labels.map((t, i) => ({ x: t, y: +slowMA[i].toFixed(3) })),
-        borderColor: '#fb923c',
-        borderWidth: 1.5,
-        pointRadius: 0,
-        borderDash: [4, 4],
-        fill: false,
-        order: 4,
-      },
-      {
-        label: 'Buy',
-        data: buys,
-        type: 'scatter',
-        pointStyle: 'triangle',
-        pointRadius: 8,
-        pointHoverRadius: 10,
-        backgroundColor: '#22c55e',
-        borderColor: '#22c55e',
-        order: 1,
-      },
-      {
-        label: 'Sell',
-        data: sells,
-        type: 'scatter',
-        pointStyle: 'triangle',
-        pointRotation: 180,
-        pointRadius: 8,
-        pointHoverRadius: 10,
-        backgroundColor: '#f43f5e',
-        borderColor: '#f43f5e',
-        order: 2,
-      },
-    ];
-
-    if (chartInstances[canvasId]) {
-      chartInstances[canvasId].destroy();
-    }
-
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
-      type: 'line',
-      data: { datasets },
-      options: chartOptions(),
-    });
+    if (chartInstances[symbol]) chartInstances[symbol].destroy();
+    const ctx = document.getElementById(`chart-${symbol}`).getContext('2d');
+    chartInstances[symbol] = new Chart(ctx, { type: 'line', data: { datasets }, options: chartOptions() });
   }
 
-  // Initial load + refresh every 2 min
-  loadChart('SPY',  'spy-chart',  document.getElementById('spy-tf').value);
-  loadChart('AAPL', 'aapl-chart', document.getElementById('aapl-tf').value);
-  setInterval(() => {
-    loadChart('SPY',  'spy-chart',  document.getElementById('spy-tf').value);
-    loadChart('AAPL', 'aapl-chart', document.getElementById('aapl-tf').value);
-  }, 120_000);
+  function loadAllCharts() {
+    STRATEGIES.forEach(s => loadChart(s.symbol, s.overlay ?? ''));
+  }
+  loadAllCharts();
+  setInterval(loadAllCharts, 120_000);
 </script>
 </body>
 </html>
