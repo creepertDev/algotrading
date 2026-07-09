@@ -104,7 +104,8 @@ class BotEngine:
         # Seed portfolio equity
         try:
             account = await self._exec.query_account()
-            equity  = float(account.get("equity", 0))
+            data    = account.get("data", account)   # service wraps in {"data": ...}
+            equity  = float(data.get("equity", 0))
             self._portfolio.set_equity(equity)
             log.info("Account equity: $%.2f", equity)
         except Exception as exc:

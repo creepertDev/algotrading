@@ -86,6 +86,12 @@ class ExecutionClient:
     async def _call(self, payload: dict, timeout: float = 10.0) -> dict:
         await self._ready.wait()
         async with self._lock:
+            # Drain any stale responses left behind by a previous timeout —
+            # otherwise a late reply gets consumed by this request and every
+            # response after it is off by one.
+            while not self._recv_queue.empty():
+                stale = self._recv_queue.get_nowait()
+                log.warning("Discarding stale execution-service response: %s", stale)
             await self._ws.send(json.dumps(payload))
             return await asyncio.wait_for(self._recv_queue.get(), timeout=timeout)
 
