@@ -12,6 +12,7 @@ The engine wires up the execution client and portfolio manager automatically.
 from __future__ import annotations
 import asyncio
 import logging
+import os
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
@@ -144,10 +145,22 @@ class Strategy(ABC):
                 qty=qty, notional=notional, limit_price=limit_price,
                 time_in_force=time_in_force,
             )
+            # An error response is a failure, not a submission — do not
+            # record a fill for it, and alert. (No auto-retry: a timeout may
+            # mean the order actually reached the broker; resubmitting would
+            # double the position.)
+            if not isinstance(resp, dict) or resp.get("status") == "error" \
+                    or resp.get("error_message"):
+                log.error("[%s] Order REJECTED/FAILED: %s %s %s — %s",
+                          self.name, side, qty, symbol, resp)
+                await self._alert(f"Order failed: {self.name} {side} {qty} "
+                                  f"{symbol} — {resp}")
+                return None
+
             log.info("[%s] Order submitted: %s", self.name, resp)
             # Optimistically record the fill so the portfolio manager
             # tracks position and doesn't block the matching close order.
-            if qty and resp and isinstance(resp, dict):
+            if qty:
                 fill_price = float(
                     resp.get("filled_avg_price") or
                     resp.get("limit_price") or
@@ -157,5 +170,25 @@ class Strategy(ABC):
                     self.portfolio.record_fill(symbol, side, qty, fill_price)
             return resp
         except Exception as exc:
-            log.error("[%s] Order submission failed: %s", self.name, exc)
+            log.error("[%s] Order submission failed: %s %s %s — %s",
+                      self.name, side, qty, symbol, exc)
+            await self._alert(f"Order submission failed: {self.name} "
+                              f"{side} {qty} {symbol} — {exc}")
             return None
+
+    async def _alert(self, message: str) -> None:
+        """POST an alert to ALERT_WEBHOOK_URL if configured (Discord/Slack/
+        Telegram-bridge style JSON). Never raises."""
+        url = os.getenv("ALERT_WEBHOOK_URL", "")
+        if not url:
+            return
+        try:
+            import requests
+            await asyncio.to_thread(
+                requests.post, url,
+                json={"content": f"🚨 [algobot] {message}",
+                      "text":    f"🚨 [algobot] {message}"},
+                timeout=5,
+            )
+        except Exception as exc:
+            log.warning("Alert webhook failed: %s", exc)
