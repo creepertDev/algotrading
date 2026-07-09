@@ -47,6 +47,17 @@ strategies:
       max_trades_per_session: 3
       bar_timeframe: "5Min"
 
+  - name: "news_sentiment_TSLA"
+    class: "NewsSentiment"
+    symbols: ["TSLA"]
+    params:
+      buy_threshold: 0.6
+      exit_threshold: -0.6
+      hold_minutes: 60
+      stop_loss_pct: 0.5
+      max_trades_per_session: 3
+      bar_timeframe: "5Min"
+
 logging:
   level: "INFO"
   file: "logs/algobot.log"

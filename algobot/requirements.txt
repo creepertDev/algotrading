@@ -4,3 +4,5 @@ pandas>=2.0
 numpy>=1.26
 yfinance>=0.2
 scikit-learn>=1.4   # ready for ML strategies
+requests>=2.31
+vaderSentiment>=3.3  # news sentiment scoring
